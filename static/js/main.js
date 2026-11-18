@@ -43,7 +43,7 @@
         const y = window.scrollY;
         bar.classList.toggle("scrolled", y > 40);
         const h = document.documentElement.scrollHeight - window.innerHeight;
-        prog.style.transform = "scaleX(" + (h > 0 ? Math.min(1, y / h) : 0) + ")";
+        if (prog) prog.style.transform = "scaleX(" + (h > 0 ? Math.min(1, y / h) : 0) + ")";
         ticking = false;
       });
     }
@@ -173,9 +173,9 @@
       this.gAxis.appendChild(tx);
     }
     const sl = svgEl("text", { x: L.m - 4, y: L.yAxis + 36, class: "side neg", "text-anchor": "start" });
-    sl.textContent = "← older rated lower";
+    sl.textContent = "← lower under older";
     const sr = svgEl("text", { x: L.w - L.m + 4, y: L.yAxis + 36, class: "side pos", "text-anchor": "end" });
-    sr.textContent = "older rated higher →";
+    sr.textContent = "higher under older →";
     this.gAxis.append(sl, sr);
 
     // band
@@ -273,7 +273,7 @@
   }
   function gateHuman(gi, dim) {
     const h = P.gate.human[dim][gi];
-    return { v: h[0], lo: h[1], hi: h[2], label: "Older humans" };
+    return { v: h[0], lo: h[1], hi: h[2], label: "OASIS raters" };
   }
 
   /* ---------------- hero: the reversal ---------------- */
@@ -375,7 +375,7 @@
         domain: [0.82, 0.94], ticks: [0.82, 0.85, 0.88, 0.91, 0.94], tf: (t) => t.toFixed(2), axis: "Pearson <i>r</i> (higher is better)",
         get: (m) => m.rbase, dec: 3, desc: true, stem: false,
         ro: (vals) => [["best", "0.923", "good"], ["median", median(vals).toFixed(3), ""], ["weakest", "0.837", ""]],
-        note: "Every model ranks images by pleasantness much like the average rater. Arousal is weaker (median 0.667), in line with lower human agreement on arousal.",
+        note: "Pearson correlation between the no-age rating and pooled OASIS valence. Arousal is weaker (0.526–0.709, median 0.667), in line with lower inter-rater agreement for arousal in the human data.",
       },
       slope: {
         title: "Calibration: does the model stretch the human rating range?", sub: "slope from regressing model ratings on pooled human means; 1 = same range",
@@ -383,14 +383,14 @@
         get: (m) => m.slope, dec: 2, desc: true, stem: true, base: 1,
         guides: [{ at: 1, label: "human range", color: "var(--grounded)" }],
         ro: (vals) => [["models above 1", "17 / 17", "bad"], ["median slope", median(vals).toFixed(2), ""], ["range", "1.04–1.39", ""]],
-        note: "All 17 models over-disperse: they keep the human ordering of images but exaggerate the contrast between pleasant and unpleasant ones.",
+        note: "All 17 models over-disperse: they preserve the ordering of images while exaggerating contrast relative to human raters.",
       },
       dOY: {
         title: "Responsiveness: older − young valence shift", sub: "mean paired difference on the same images; hollow = not significant (BH)",
         domain: [-0.25, 0.05], ticks: [-0.25, -0.2, -0.15, -0.1, -0.05, 0, 0.05], tf: (t) => (Math.abs(t) < 1e-9 ? "0" : fmt(t, 2)), axis: "older − young valence (scale points)",
         get: (m) => m.dOY, ns: (m) => m.dNS, dec: 3, desc: false, stem: true, base: 0,
         ro: () => [["shift downward", "16 / 17", "bad"], ["significant", "13 / 17", ""], ["largest", "−0.226", ""]],
-        note: "The age cue clearly moves the models; the largest shift is Qwen3-VL-235B (d<sub>z</sub> = −0.33). On arousal all 17 shift down, all significant. Pooled over all images, older OASIS raters are slightly more positive (+0.111 [−0.05, 0.29]).",
+        note: "Mean paired older-minus-young difference. The largest shift is −0.226 (Qwen3-VL-235B, d<sub>z</sub> = −0.33). On arousal, all 17 models shift negative and all survive correction. Pooled over images, older OASIS raters rate slightly more pleasantly than young raters (+0.111 [−0.05, 0.29]).",
       },
       rpart: {
         title: "Fidelity: image-level agreement with the human age effect", sub: "partial correlation after removing pleasantness · 95% bootstrap CI",
@@ -398,14 +398,14 @@
         get: (m) => m.rpart, ci: true, dec: 3, desc: true, stem: false,
         guides: [{ type: "shade", from: 0, to: 0.595 }, { at: 0.595, label: "attainable ceiling 0.595", left: true }],
         ro: (vals) => [["best model (GLM-4.5V)", "0.093", "bad"], ["median", median(vals).toFixed(3), ""], ["best share of ceiling", "15.6%", "bad"]],
-        note: "Fifteen of 17 intervals cover zero; the two that do not (Claude-Sonnet-4.6, GLM-4.5V) do not survive correction over 34 tests or rater resampling. Pleasantness alone reaches 0.897 before adjustment.",
+        note: "Fifteen of the 17 intervals cover zero; the two that do not (Claude-Sonnet-4.6, GLM-4.5V) do not survive correction over the 34 model–dimension tests or rater resampling. Before adjustment, pleasantness alone correlates with the human age effect at 0.897.",
       },
       aversive: {
         title: "Emotion labels: net images gaining an aversive label", sub: "anger, sadness, fear, disgust · older minus young persona · hollow = not significant",
         domain: [-20, 70], ticks: [-20, 0, 20, 40, 60], tf: (t) => (t > 0 ? "+" : "") + t, axis: "net images (older-only aversive − young-only aversive)",
         get: (m) => m.aversive, ns: (m) => m.aNS, dec: 0, desc: true, stem: true, base: 0,
         ro: () => [["significant aversive gain", "13 / 17", "bad"], ["pooled pairs, older-only", "746", ""], ["pooled pairs, young-only", "239", ""]],
-        note: "The gain is carried by sadness (net +271) and fear (+184); surprise (−206) and joy (−133) lose most.",
+        note: "Net images gaining an aversive label (anger, sadness, fear, disgust) under the older persona. The gain is carried by sadness (net +271) and fear (+184); surprise (−206) and joy (−133) lose most.",
       },
     };
 
@@ -488,7 +488,7 @@
     const host = $("#gate-swarm");
     if (!host) return;
     const sw = new Swarm(host, { height: 280 });
-    let gi = 2, dim = "v";
+    let gi = 3, dim = "v";
     function show(animate) {
       const items = gateItems(gi, dim), h = gateHuman(gi, dim);
       const state = { domain: dim === "v" ? [-1.6, 1.0] : [-1.7, 1.2], step: 0.5, items, human: h };
@@ -525,8 +525,8 @@
       el.className = "ex";
       el.innerHTML =
         '<div class="ex-top"><img src="static/images/oasis/' + ex.image + '.jpg" width="500" height="400" loading="lazy" alt="OASIS image ' + ex.name + '">' +
-        '<div class="ttl"><b>' + ex.title + "</b><span>“" + ex.name + "” · not flagged</span></div></div>" +
-        '<div class="ex-meta"><div><b>' + ex.v.toFixed(1) + " / " + ex.a.toFixed(1) + '</b>human V / A</div><div><b class="up">↑ more pleasant</b>raters 60+</div><div><b class="dn">' + fmt(ex.oy, 2) + "</b>17-VLM O − Y</div></div>" +
+        '<div class="ttl"><b>OASIS “' + ex.name + "”</b><span>" + ex.title + "</span></div></div>" +
+        '<div class="ex-meta"><div><b>' + ex.v.toFixed(1) + " / " + ex.a.toFixed(1) + '</b>human V / A</div><div><b class="up">higher</b>raters 60+</div><div><b class="dn">' + fmt(ex.oy, 2) + "</b>VLMs O − Y</div></div>" +
         '<div class="ex-body">' + ex.says.map((s, i) =>
           '<div class="say" data-i="' + i + '"><div class="say-head"><span class="who">' + s.model + '</span><span class="rating"><b></b><span class="lab"></span></span></div><blockquote></blockquote></div>'
         ).join("") + "</div>";
@@ -723,7 +723,7 @@
     }
     btn.addEventListener("click", () => {
       const text = pre.textContent.trim();
-      const done = () => { btn.textContent = "Copied ✓"; setTimeout(() => (btn.textContent = "Copy"), 1600); };
+      const done = () => { btn.textContent = "Copied"; setTimeout(() => (btn.textContent = "Copy"), 1600); };
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(text).then(done, () => { selectText(); btn.textContent = "Press Ctrl+C"; });
       } else { selectText(); btn.textContent = "Press Ctrl+C"; }

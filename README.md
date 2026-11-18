@@ -32,5 +32,5 @@ python -m http.server 8000
 # open http://localhost:8000
 ```
 
-Fonts (Inter, Source Serif 4, JetBrains Mono) load from Google Fonts; equations use MathJax 3.2.2 from jsDelivr.
+Noto Sans loads from Google Fonts; equations use MathJax 3.2.2 from jsDelivr.
 OASIS images: Kurdi, Lozano & Banaji (2017), https://doi.org/10.3758/s13428-016-0715-3.
