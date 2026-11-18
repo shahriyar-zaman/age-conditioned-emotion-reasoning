@@ -3,29 +3,32 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Characterizing Age-Conditioned Affective Reasoning in Vision-Language Models</title>
+<title>Age-Conditioned Affect in VLMs</title>
 <script>
-  /* Light is the default; a saved choice from the toggle (or ?theme=dark) wins. */
+  /* Light is the default. A saved choice from the toggle wins. */
   (function () {
     var t = null;
     try { t = localStorage.getItem("theme"); } catch (e) {}
     var q = /[?&]theme=(dark|light)/.exec(location.search);
     if (q) t = q[1];
     document.documentElement.setAttribute("data-theme", t === "dark" ? "dark" : "light");
+    document.documentElement.classList.add("js");
   })();
 </script>
-<meta name="description" content="We evaluate whether age prompts change vision-language model affect ratings in the same way that ratings differ between younger and older people, using 17 VLMs, 900 OASIS images and 822 human raters.">
+<meta name="description" content="An age prompt changes how vision-language models rate images, but not in the way people of different ages actually differ. 17 VLMs, 900 OASIS images, 822 human raters.">
 <meta name="author" content="Shahriyar Zaman Ridoy, Azmine Toushik Wasi, Lin Gu, Ruogu Fang">
+<meta name="theme-color" content="#ffffff">
 <meta property="og:title" content="Characterizing Age-Conditioned Affective Reasoning in Vision-Language Models">
-<meta property="og:description" content="Do age prompts change VLM affect ratings the way ratings differ between younger and older people? 17 VLMs, 900 OASIS images, 822 human raters.">
+<meta property="og:description" content="Following an age cue is not the same as capturing how people of that age experience an image. 17 VLMs × 900 OASIS images × 822 human raters.">
 <meta property="og:image" content="https://shahriyar-zaman.github.io/age-conditioned-emotion-reasoning/static/images/social-card.jpg">
 <meta property="og:url" content="https://shahriyar-zaman.github.io/age-conditioned-emotion-reasoning/">
 <link rel="canonical" href="https://shahriyar-zaman.github.io/age-conditioned-emotion-reasoning/">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230e1626'/%3E%3Ccircle cx='12.5' cy='16' r='7' fill='%232563eb' fill-opacity='.95'/%3E%3Ccircle cx='19.5' cy='16' r='7' fill='%23e07a1f' fill-opacity='.85'/%3E%3Cpath d='M16 11.5l3 4.5-3 4.5-3-4.5z' fill='%23fff'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,500&display=swap">
 <link rel="stylesheet" href="static/css/style.css">
 <script>
   window.MathJax = {
@@ -37,16 +40,20 @@
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js"></script>
 </head>
 <body>
+<div class="progress" id="progress" aria-hidden="true"></div>
 
 <header class="topbar" id="topbar">
   <div class="container">
-    <a class="brand" href="#top">Age-Conditioned Affect in VLMs</a>
+    <a class="brand" href="#top" aria-label="Back to top">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#0e1626"/><circle cx="12.5" cy="16" r="7" fill="#2563eb" fill-opacity=".95"/><circle cx="19.5" cy="16" r="7" fill="#e07a1f" fill-opacity=".85"/><path d="M16 11.5l3 4.5-3 4.5-3-4.5z" fill="#fff"/></svg>
+      <span>Age-Conditioned Affect in VLMs</span>
+    </a>
     <nav class="nav" aria-label="Sections">
-      <a href="#abstract">Abstract</a>
+      <a href="#overview">Overview</a>
       <a href="#method">Method</a>
-      <a href="#results">Results</a>
-      <a href="#content">Sensitive content</a>
-      <a href="#persona">Examples</a>
+      <a href="#findings">Findings</a>
+      <a href="#content">Content</a>
+      <a href="#persona">Persona</a>
       <a href="#interventions">Interventions</a>
       <a href="#bibtex-section">BibTeX</a>
     </nav>
@@ -59,9 +66,11 @@
 
 <main id="top">
 
-<!-- ============ HEADER ============ -->
+<!-- ============ HERO ============ -->
 <section class="hero container">
-  <h1>Characterizing Age-Conditioned Affective Reasoning in Vision-Language Models</h1>
+  <div class="aurora" aria-hidden="true"></div>
+  <span class="badge"><span class="dot"></span><b>Preprint</b> · under review</span>
+  <h1>Characterizing <em class="nowrap">Age-Conditioned</em> Affective Reasoning in <span class="nowrap">Vision-Language</span> Models</h1>
 
   <ul class="authors">
     <li><a href="https://shahriyar-zaman.github.io/" target="_blank" rel="noopener">Shahriyar Zaman Ridoy</a><sup>1</sup></li>
@@ -82,21 +91,20 @@
     <a href="mailto:ruogu.fang@vanderbilt.edu">ruogu.fang@vanderbilt.edu</a>
   </div>
   <p class="corr"><sup>*</sup>Corresponding author: Ruogu Fang (<a href="mailto:ruogu.fang@vanderbilt.edu">ruogu.fang@vanderbilt.edu</a>)</p>
-  <p class="venue">Preprint, under review</p>
 
   <div class="links">
-    <!-- To activate a button: change <span class="pill soon"> to <a class="pill" href="URL" target="_blank" rel="noopener"> and delete <small>(soon)</small> -->
+    <!-- To activate a button: change <span class="pill soon"> to <a class="pill" href="URL" target="_blank" rel="noopener"> and delete <small>soon</small> -->
     <span class="pill soon" title="Coming soon">
       <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 1.5h5.5L13 5v9.5H4z M9.5 1.5V5H13" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
-      Paper <small>(soon)</small>
+      Paper <small>soon</small>
     </span>
     <span class="pill soon" title="Coming soon">
       <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3.5h10M3 6.5h10M3 9.5h7M3 12.5h5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-      arXiv <small>(soon)</small>
+      arXiv <small>soon</small>
     </span>
     <span class="pill soon" title="Coming soon">
       <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5.5 4 1.5 8l4 4M10.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      Code &amp; Data <small>(soon)</small>
+      Code &amp; data <small>soon</small>
     </span>
     <a class="pill" href="#bibtex-section">
       <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 4h4v4H4.5L3 11V4zM9 4h4v4h-2.5L9 11V4z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
@@ -104,61 +112,122 @@
     </a>
   </div>
 
-  <figure>
-    <button class="shot" type="button" aria-label="Enlarge figure 1">
-      <img src="static/images/teaser.png" width="2400" height="1122" alt="Three panels. (a) Age differences in affect predicted by Keil and Freund 2009 for appetitive, aversive, resting and shape systems. (b) The same systems under older versus young persona prompts, pooled over 17 VLMs, with shading for whether the model change matches OASIS raters. (c) Per-image age effects agree across model pairs at r = 0.43 but with humans at only 0.03.">
-    </button>
-    <figcaption><b>Figure 1. Age differences in human ratings and age-conditioned model predictions.</b> (a) Age differences predicted by Keil and Freund (2009) for each affect system; arrows give the predicted direction. (b) The same systems under the older versus young persona, pooled over 17 VLMs; shading marks whether the model change matches OASIS raters (significant, direction only, or opposite). (c) Per-image age effects agree across model pairs (<i>r</i> = 0.43) but not with humans (<i>r</i><sub>part</sub> = 0.03).</figcaption>
-  </figure>
+  <p class="tldr"><b>TL;DR</b>Tell a VLM to rate an image “as an older adult” and its rating changes. The change does not track how older people actually rate that image. On pleasant images flagged as sensitive, every one of 17 models moves in the opposite direction from older raters.</p>
+
+  <!-- the reversal: live chart from Table 7 of the paper -->
+  <div class="stage reveal" id="hero-stage">
+    <div class="stage-head">
+      <div class="stage-title">The reversal<small>Pleasant images flagged as sensitive (n = 54) · older − young valence</small></div>
+      <div class="stage-keys">
+        <span><i class="k-model"></i>17 VLMs, older vs young persona</span>
+        <span><i class="k-human"></i>OASIS raters 60+ vs 18–29, 95% CI</span>
+        <button class="replay" type="button" id="hero-replay"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8a5.5 5.5 0 1 0 1.7-4M2.5 2.5v3h3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Replay</button>
+      </div>
+    </div>
+    <div class="swarm" id="hero-swarm" role="img" aria-label="All 17 models rate pleasant sensitive images lower under the older persona (from −0.30 to −1.49), while older human raters rate them 0.44 higher."></div>
+    <div class="stage-foot">
+      <div class="m"><strong>−0.845</strong>mean model shift under the older persona; all 17 below zero (−1.49 to −0.30)</div>
+      <div class="h"><strong>+0.443</strong>older OASIS raters rate these images higher than young raters [0.10, 0.86]</div>
+    </div>
+  </div>
+
+  <ul class="stats reveal">
+    <li><strong class="c-ink" data-count="0.891" data-dec="3">0.891</strong><span>median <i>r</i> with average human valence, no age cue</span></li>
+    <li><strong class="c-older"><span data-count="16" data-dec="0">16</span> / 17</strong><span>models rate images lower under the older persona</span></li>
+    <li><strong class="c-model">≤ <span data-count="0.093" data-dec="3">0.093</span></strong><span>image-level fidelity <i>r</i><sub>part</sub>, against a ceiling of 0.595</span></li>
+    <li><strong class="c-human"><span data-count="17" data-dec="0">17</span> / 17</strong><span>reverse the human age contrast on pleasant sensitive images</span></li>
+  </ul>
 </section>
 
-<!-- ============ ABSTRACT ============ -->
-<section class="block container" id="abstract">
-  <h2>Abstract</h2>
-  <div class="text abstract">
-    <p>An age prompt can change how a vision-language model (VLM) rates an image. Does the change predict how people of different ages rate that same image? We evaluate 17 VLMs on 900 OASIS images and estimate image-specific age differences from ratings by 822 participants. Without an age cue, models closely track average human valence (median Pearson <i>r</i> = 0.891). Under an older-adult prompt, 16 of 17 models assign lower valence on average than under a young-adult prompt. Yet after adjusting for image pleasantness, correlations between model and human age effects range from −0.030 to 0.093, against an estimated ceiling of 0.595. The discrepancy is clearest on 54 sensitive images rated as pleasant. Across models, the older prompt reduces valence by 0.845 points on average, while older participants rate these images 0.443 points higher than younger participants. Providing human ratings from other images improves agreement on the direction of age differences, although image-specific fidelity remains modest on 600 held-out images (<i>r</i><sub>part</sub> = 0.105). These results show why evaluations of demographic personalization need human comparisons at the level of individual stimuli.</p>
+<!-- ============ OVERVIEW ============ -->
+<section class="block container" id="overview">
+  <div class="head reveal">
+    <span class="eyebrow" data-n="01">Overview</span>
+    <h2>Following an age cue is not the same as knowing an age group</h2>
   </div>
+  <div class="narrow abstract reveal">
+    <p>An age prompt can change how a vision-language model (VLM) rates an image. Does the change predict how people of different ages rate that same image? We evaluate 17 VLMs on 900 OASIS images and estimate image-specific age differences from ratings by 822 participants. Without an age cue, models closely track average human valence (median Pearson <i>r</i> = 0.891). Under an older-adult prompt, 16 of 17 models assign lower valence on average than under a young-adult prompt. Yet after adjusting for image pleasantness, correlations between model and human age effects range from −0.030 to 0.093, against an estimated ceiling of 0.595.</p>
+    <p>The discrepancy is clearest on 54 sensitive images rated as pleasant. Across models, the older prompt reduces valence by 0.845 points on average, while older participants rate these images 0.443 points higher than younger participants. Providing human ratings from other images improves agreement on the direction of age differences, although image-specific fidelity remains modest on 600 held-out images (<i>r</i><sub>part</sub> = 0.105). These results show why evaluations of demographic personalization need human comparisons at the level of individual stimuli.</p>
+  </div>
+
+  <figure class="reveal" style="margin-top:34px">
+    <button class="shot" type="button" aria-label="Enlarge figure 1">
+      <img src="static/images/teaser.png" width="2400" height="1122" loading="lazy" alt="Three panels. (a) Age differences in affect predicted by Keil and Freund 2009 for appetitive, aversive, resting and shape systems. (b) The same systems under older versus young persona prompts, pooled over 17 VLMs, with shading for whether the model change matches OASIS raters. (c) Per-image age effects agree across model pairs at r = 0.43 but with humans at only 0.03.">
+      <span class="zoom" aria-hidden="true"><svg viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10.5 10.5 14 14M7 5v4M5 7h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
+    </button>
+    <figcaption><b>Figure 1.</b> (a) Age differences in affect predicted by Keil &amp; Freund (2009). (b) The same affect systems under the older vs. young persona, pooled over 17 VLMs; shading marks whether the model change matches OASIS raters. (c) Per-image age effects agree across model pairs (<i>r</i> = 0.43) but not with humans (<i>r</i><sub>part</sub> = 0.03).</figcaption>
+  </figure>
 </section>
 
 <!-- ============ METHOD ============ -->
 <section class="block container" id="method">
-  <h2>Method</h2>
-  <div class="text">
-    <p>We use all 900 OASIS images and the participant-level archive of 184,939 ratings from 822 people aged 18–74. Each of 17 instruction-tuned VLMs from seven developers rates every image under four instructions that specify no age, young adulthood, middle adulthood, or older adulthood, returning valence, arousal, an emotion label and a short description (61,200 requests, 99.6% valid). We treat model outputs as instructed judgments, not evidence of felt emotion, and separate three properties:</p>
+  <div class="head reveal">
+    <span class="eyebrow" data-n="02">Method</span>
+    <h2>Same image, four personas, one human yardstick</h2>
+    <p>We treat model outputs as instructed judgments, not felt emotion, and separate three properties that are usually blurred together.</p>
   </div>
-  <dl class="defs">
-    <div><dt>Competence</dt><dd>Agreement of the no-age rating with the pooled human mean \(\bar H_i\): Pearson <i>r</i>, CCC, MAE and calibration slope.</dd></div>
-    <div><dt>Responsiveness</dt><dd>The paired older-minus-young contrast \(\Delta_{O-Y}\) on the same images, with Benjamini–Hochberg correction across models.</dd></div>
-    <div><dt>Fidelity</dt><dd>The partial correlation \(r_{\text{part}}\) between the model age effect \(\Delta M_i\) and the human age effect \(\Delta H_i\), controlling for pleasantness.</dd></div>
-  </dl>
 
-  <figure>
-    <button class="shot" type="button" aria-label="Enlarge figure 2">
-      <img src="static/images/pipeline.jpg" width="1672" height="941" loading="lazy" alt="Study pipeline: OASIS images and participant-level ratings feed a hierarchical human reference model; 17 VLMs rate the same images under no-age, young, middle and older personas; competence, responsiveness and fidelity are measured; then diagnostics, mitigation experiments on 300 images, and held-out validation on 600 images.">
+  <div class="facts reveal">
+    <div class="fact"><strong>17</strong><span>VLMs from 7 developers</span></div>
+    <div class="fact"><strong>900</strong><span>OASIS images, 167 flagged sensitive</span></div>
+    <div class="fact"><strong>822</strong><span>human raters aged 18–74</span></div>
+    <div class="fact"><strong>184,939</strong><span>participant-level ratings</span></div>
+    <div class="fact"><strong>61,200</strong><span>model requests, 99.6% valid</span></div>
+  </div>
+
+  <div class="trio">
+    <div class="card ok reveal">
+      <span class="num" aria-hidden="true">1</span>
+      <span class="tag">Competence</span>
+      <h3>Does it match the average person?</h3>
+      <p>Baseline rating with no age cue vs. the pooled human mean \(\bar H_i\): Pearson <i>r</i>, CCC, MAE and calibration slope.</p>
+      <div class="verdict"><strong>0.891</strong><span>median <i>r</i> on valence (0.837–0.923)</span></div>
+    </div>
+    <div class="card mid reveal">
+      <span class="num" aria-hidden="true">2</span>
+      <span class="tag">Responsiveness</span>
+      <h3>Does the age cue move it?</h3>
+      <p>Paired older-minus-young contrast \(\Delta_{O-Y}\) on the same images, Benjamini–Hochberg across models.</p>
+      <div class="verdict"><strong>13 / 17</strong><span>significant valence drops under the older persona</span></div>
+    </div>
+    <div class="card bad reveal">
+      <span class="num" aria-hidden="true">3</span>
+      <span class="tag">Fidelity</span>
+      <h3>Does it move where humans differ?</h3>
+      <p>Partial correlation between the model age effect \(\Delta M_i\) and the human age effect \(\Delta H_i\), controlling for pleasantness.</p>
+      <div class="verdict"><strong>≤ 0.093</strong><span><i>r</i><sub>part</sub> for every model; ceiling 0.595</span></div>
+    </div>
+  </div>
+
+  <figure class="reveal" style="margin-top:30px">
+    <button class="shot" type="button" aria-label="Enlarge the study pipeline figure">
+      <img src="static/images/pipeline.jpg" width="1672" height="941" loading="lazy" alt="Study pipeline: OASIS images and participant-level ratings feed a hierarchical human reference model; 17 VLMs rate the same images under no-age, young, middle and older personas, returning valence, arousal, an emotion label and a description; competence, responsiveness and fidelity are measured; then content and linguistic diagnostics, mitigation experiments on 300 images, and held-out validation on 600 images.">
+      <span class="zoom" aria-hidden="true"><svg viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10.5 10.5 14 14M7 5v4M5 7h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
     </button>
-    <figcaption><b>Figure 2. Stimulus-matched evaluation of age-conditioned affect.</b> OASIS ratings (a) yield per-image human means \(\bar H_i\), age effects \(\Delta H_i\), and uncertainty \(\tau_i\) (b). 17 VLMs rate the same images under four age conditions (c), returning valence, arousal, an emotion label, and a description (d). We measure competence, responsiveness, and fidelity (e), run diagnostics (f), test reasoning-only and human-grounded mitigations on 300 images (g), and validate S4 on 600 held-out images (h).</figcaption>
+    <figcaption><b>Stimulus-matched evaluation.</b> OASIS ratings (a) yield per-image human means \(\bar H_i\), age effects \(\Delta H_i\) and uncertainty \(\tau_i\) (b). 17 VLMs rate the same images under four age conditions (c, d). We measure competence, responsiveness and fidelity (e), run diagnostics (f), test reasoning-only and human-grounded mitigations on 300 images (g), and validate on 600 held-out images (h).</figcaption>
   </figure>
 
-  <details class="more">
-    <summary>Human and model age effects</summary>
+  <details class="more reveal">
+    <summary>How the human and model age effects are estimated <span>§3.1 – §3.3</span></summary>
     <div class="inner">
-      <p>Only 41 participants are aged 60 or older, so older-adult means are not reliable for individual images. We estimate image-specific age effects with a partially pooled model fitted by variational EM:</p>
+      <p style="color:var(--ink-2);font-size:.93rem;margin-top:0">Only 41 raters are 60+, so per-image older means are unreliable. A partially pooled model gives each image its own age slope \(s_i\):</p>
       <div style="overflow-x:auto">\[ y_{pi}^{(d)} = \alpha_{\ell(i)}^{(d)} + \beta_{\ell(i)}^{(d)} z_p^{(d)} + u_p^{(d)} + v_i^{(d)} + s_i^{(d)} z_p^{(d)} + \varepsilon_{pi}^{(d)}, \qquad \Delta H_i^{(d)} = \mathbb{E}\big[s_i^{(d)} \mid \mathcal{D}_H\big] \]</div>
-      <p>The model age effect is the least-squares trend across the young, middle and older personas (reference ages 23.5, 44.5 and 67.0), rescaled to the human units:</p>
+      <p style="color:var(--ink-2);font-size:.93rem">The model age effect is the least-squares trend across the young, middle and older personas (reference ages 23.5, 44.5, 67.0), rescaled to the human units:</p>
       <div style="overflow-x:auto">\[ \Delta M_{im}^{(d)} = \sigma_a^{(d)} \frac{\sum_g (a_g-\bar a_G)\, M_{img}^{(d)}}{\sum_g (a_g-\bar a_G)^2}, \qquad g \in \{Y, M, O\} \]</div>
-      <p>Because pooled pleasantness alone correlates with \(\Delta H\) at <i>r</i> = 0.897, \(r_{\text{part}}\) partials a quadratic in human valence out of both sides. Its attainable ceiling, given uncertainty in the human effects, is 0.595 (split-half estimate 0.62). All requests use temperature 0, one completion, and no system message; the persona prompts differ only in the age phrase.</p>
+      <p style="color:var(--ink-2);font-size:.93rem;margin-bottom:0">Pleasantness alone correlates with \(\Delta H\) at 0.897, so the headline statistic \(r_{\text{part}}\) partials a quadratic in human valence out of both sides. Its attainable ceiling, set by uncertainty in the human effects, is 0.595 (split-half check: 0.62). Temperature 0, one completion, no system prompt; the persona prompts differ only in the age phrase.</p>
     </div>
   </details>
 </section>
 
-<!-- ============ RESULTS ============ -->
-<section class="block container" id="results">
-  <h2>Results</h2>
-  <div class="text">
-    <p>Without an age cue, agreement with pooled human valence is high for every developer (<i>r</i> = 0.837–0.923, median 0.891), and all 17 models over-disperse the human range (calibration slopes 1.04–1.39). Under the age instruction, 16 of 17 models rate the same images lower under the older persona than under the young persona, 13 after correction. Yet after list centering and partialling out pleasantness, the image-level correlation with the human age effect lies in [−0.030, 0.093], against an attainable ceiling of 0.595. The best model reaches 15.6% of that ceiling.</p>
+<!-- ============ FINDINGS ============ -->
+<section class="block container" id="findings">
+  <div class="head reveal">
+    <span class="eyebrow" data-n="03">Findings</span>
+    <h2>Competent, responsive, and still not faithful</h2>
+    <p>Pick a measure. Every number below comes from Table 1 of the paper; hover a model for its value, click a developer to highlight it.</p>
   </div>
 
-  <div class="controls">
+  <div class="controls reveal">
     <div class="seg scroll" role="group" aria-label="Measure" id="metric-seg">
       <button type="button" data-metric="rbase" aria-pressed="false">Competence <i>r</i></button>
       <button type="button" data-metric="slope" aria-pressed="false">Calibration slope</button>
@@ -168,7 +237,7 @@
     </div>
   </div>
 
-  <div class="panel" id="explorer">
+  <div class="panel reveal" id="explorer">
     <div class="panel-head">
       <h4 id="ex-title">Fidelity: image-level agreement with the human age effect</h4>
       <p id="ex-sub">partial correlation after removing pleasantness · 95% bootstrap CI</p>
@@ -185,52 +254,59 @@
       <div><dt id="ro3-t">share of ceiling reached (best)</dt><dd id="ro3">15.6%</dd></div>
     </dl>
   </div>
-  <p class="panel-note"><b>Interactive Table 1 (valence, 17 models).</b> <span id="ex-note"></span></p>
+  <p class="panel-note" id="ex-note"></p>
 
-  <figure>
-    <button class="shot" type="button" aria-label="Enlarge figure 3, panels a to c">
+  <figure class="reveal" style="margin-top:34px">
+    <button class="shot" type="button" aria-label="Enlarge figure 2 panels a to c">
       <img src="static/images/competence_fidelity.png" width="2400" height="1157" loading="lazy" alt="(a) Without an age cue, 17-model mean valence tracks pooled OASIS valence with fitted slope 1.22. (b) Older-minus-young valence shift with 95% intervals for every model; 16 of 17 negative. (c) r_part with bootstrap intervals; all far below the attainable ceiling of 0.595.">
+      <span class="zoom" aria-hidden="true"><svg viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10.5 10.5 14 14M7 5v4M5 7h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
     </button>
-    <figcaption><b>Figure 3 (a–c). Baseline valence, age contrasts, and agreement with human ratings.</b> (a) Without an age cue, 17-model mean valence tracks pooled OASIS valence (median per-model <i>r</i> = 0.89; fitted slope 1.22); sensitive-flagged images highlighted. (b) Older-minus-young valence shift with 95% intervals: 16 of 17 models are negative, 13 after Benjamini–Hochberg correction (hollow: <i>q</i> ≥ .05). (c) <i>r</i><sub>part</sub> with image-bootstrap intervals: point estimates lie within [−0.03, 0.09], far below the ceiling of 0.595 (dashed).</figcaption>
+    <figcaption><b>Figure 2 (a–c).</b> Without an age cue the models track pooled valence but over-disperse it (slopes 1.04–1.39). Under the age cue, 16 of 17 shift down. Image-level fidelity stays within [−0.03, 0.09]; the best model reaches 15.6% of the attainable ceiling.</figcaption>
   </figure>
 
-  <h3 class="sub">Models agree with each other more than with humans</h3>
-  <div class="text">
-    <p>The mean pairwise correlation of model age effects over the 136 model pairs is 0.43 (range 0.16–0.71), with similar estimates within and across developers (0.424 vs. 0.429, permutation <i>p</i> = 0.54). One principal component carries 47% of the variance with all 17 models loading positively, and the consensus has split-half reliability 0.93. Yet the consensus correlates with the human age effect at only 0.050 [−0.02, 0.13]. Its first component tracks human arousal (<i>r</i> = −0.47) and the sensitive flag (<i>r</i> = −0.33), not human valence (<i>r</i> = 0.01).</p>
-  </div>
-  <figure>
-    <button class="shot" type="button" aria-label="Enlarge figure 3, panels d and e">
+  <h3 class="sub reveal">Models agree with each other, not with people</h3>
+  <p class="subp reveal">Different developers, different training data, and still the same age response. The shared component tracks arousal and the sensitive flag, not human age differences.</p>
+  <figure class="reveal">
+    <button class="shot" type="button" aria-label="Enlarge figure 2 panels d and e">
       <img src="static/images/shared_gate.png" width="2400" height="1350" loading="lazy" alt="(a) Heat map of pairwise correlations between model valence age effects, mostly 0.3 to 0.7, with a near-zero bottom row for humans. (b) Older-minus-young valence by image type; on pleasant flagged images models drop by about 0.85 while OASIS raters rise by 0.44.">
+      <span class="zoom" aria-hidden="true"><svg viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10.5 10.5 14 14M7 5v4M5 7h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
     </button>
-    <figcaption><b>Figure 3 (d–e).</b> (d) Pairwise correlations of model valence age effects: models agree with one another (mean <i>r</i> = 0.43 over 136 pairs) but weakly with human age effects (mean <i>r</i><sub>part</sub> = 0.03, bottom row). (e) On flagged pleasant images (<i>n</i> = 54), models lower valence by 0.85 on average, while older human raters score them 0.44 higher (participant bootstrap [0.10, 0.86]; 25 raters aged 60+).</figcaption>
   </figure>
-
-  <h3 class="sub">Scale increases responsiveness without improving alignment</h3>
-  <div class="text">
-    <p>The Qwen3-VL series is the only comparison that holds the developer and post-training recipe fixed. Along it, label changes roughly double and the valence shift grows more than tenfold, while <i>r</i><sub>part</sub> stays within sampling error of zero.</p>
-  </div>
-  <div class="table-wrap">
-    <table>
-      <caption><b>Table 2.</b> Qwen3-VL scale ladder (valence).</caption>
-      <thead><tr><th>Model</th><th>Labels changed</th><th>Older − young shift</th><th><i>r</i><sub>part</sub></th></tr></thead>
-      <tbody>
-        <tr><td>Qwen3-VL-8B</td><td>105</td><td>−0.020</td><td>0.001</td></tr>
-        <tr><td>Qwen3-VL-32B</td><td>202</td><td>−0.219</td><td>0.002</td></tr>
-        <tr><td>Qwen3-VL-235B-A22B</td><td>208</td><td>−0.226</td><td>0.072</td></tr>
-      </tbody>
-    </table>
+  <div class="chips reveal">
+    <div class="chip"><strong>0.43</strong><span>mean pairwise <i>r</i> of model age effects over 136 pairs; same within and across developers (0.424 vs 0.429)</span></div>
+    <div class="chip"><strong>47%</strong><span>of variance on one principal component, all 17 models loading positively; reliability 0.93</span></div>
+    <div class="chip"><strong>0.050</strong><span><i>r</i><sub>part</sub> of the 17-model consensus with humans [−0.02, 0.13]</span></div>
   </div>
 
-  <details class="more">
-    <summary>Robustness checks</summary>
+  <h3 class="sub reveal">Scale buys responsiveness, not fidelity</h3>
+  <p class="subp reveal">Qwen3-VL 8B → 32B → 235B is the only ladder that holds the developer and training recipe fixed.</p>
+  <div class="ladder3 reveal" id="ladder3">
+    <div class="lad lab">
+      <h5>Emotion labels changed</h5><div class="s">older vs young persona, of 900 images</div>
+      <div class="cols"><div class="col" style="--h:50%"><b>105</b><i></i></div><div class="col" style="--h:97%"><b>202</b><i></i></div><div class="col" style="--h:100%"><b>208</b><i></i></div></div>
+      <div class="xs"><span>8B</span><span>32B</span><span>235B</span></div>
+    </div>
+    <div class="lad resp">
+      <h5>Valence shift |Δ<sub>O−Y</sub>|</h5><div class="s">more than tenfold</div>
+      <div class="cols"><div class="col" style="--h:8.8%"><b>0.020</b><i></i></div><div class="col" style="--h:96.9%"><b>0.219</b><i></i></div><div class="col" style="--h:100%"><b>0.226</b><i></i></div></div>
+      <div class="xs"><span>8B</span><span>32B</span><span>235B</span></div>
+    </div>
+    <div class="lad fid">
+      <h5>Fidelity <i>r</i><sub>part</sub></h5><div class="s">within sampling error of zero</div>
+      <div class="cols"><span class="ceilline" style="bottom:100%"><span>ceiling 0.595</span></span><div class="col" style="--h:0.4%"><b>0.001</b><i></i></div><div class="col" style="--h:0.4%"><b>0.002</b><i></i></div><div class="col" style="--h:12.1%"><b>0.072</b><i></i></div></div>
+      <div class="xs"><span>8B</span><span>32B</span><span>235B</span></div>
+    </div>
+  </div>
+
+  <details class="more reveal">
+    <summary>Robustness checks <span>§4.1 and appendix</span></summary>
     <div class="inner">
       <ul>
-        <li>With raters and images resampled and the human model refitted, no valence interval lies above zero (largest upper bound 0.187).</li>
-        <li>Median <i>r</i><sub>part</sub> stays at or below 0.05 under ten estimators of the human age effect, including a 50+ contrast with 78 raters.</li>
-        <li>Planting known fidelity into the OASIS design gives 92% power at a true fidelity of 0.20.</li>
-        <li>The valence results hold across seven further prompt formats and without a description (6 of 6 models).</li>
-        <li>On 450 NAPS images, six models reach a median valence correlation of 0.89 (0.90 on OASIS). A young-adult cue does not measurably reduce valence RMSE against the NAPS norms, whose raters averaged 23.9 years.</li>
-        <li>Across models, the size of the uniform shift and <i>r</i><sub>part</sub> correlate at <i>r</i> = −0.038 (<i>p</i> = 0.88).</li>
+        <li><b>Human reference.</b> With raters and images resampled and the human model refit, no valence interval lies above zero. Median <i>r</i><sub>part</sub> stays ≤ 0.05 under ten estimators of the human age effect, including a 50+ contrast with 78 raters.</li>
+        <li><b>Power.</b> Planting known fidelity into the OASIS design gives 92% power at a true fidelity of 0.20.</li>
+        <li><b>Prompts.</b> The valence results hold across seven further prompt formats, and without the description field (6 of 6 models).</li>
+        <li><b>Second dataset.</b> On 450 NAPS images, six models reach median valence <i>r</i> = 0.89 (0.90 on OASIS); with NAPS raters averaging 23.9 years, a young-adult cue never measurably lowers valence error.</li>
+        <li><b>Shift ≠ fidelity.</b> Across models, the size of the uniform shift and <i>r</i><sub>part</sub> correlate at <i>r</i> = −0.038 (<i>p</i> = 0.88).</li>
       </ul>
     </div>
   </details>
@@ -238,17 +314,18 @@
 
 <!-- ============ CONTENT ============ -->
 <section class="block container" id="content">
-  <h2>Sensitive Content</h2>
-  <div class="text">
-    <p>The shared response is associated more strongly with sensitive content than with pleasantness: the older-minus-young valence shift averages −0.390 on flagged images and −0.035 on unflagged ones, an ordering that holds for all 17 models. Crossing the flag with pooled human valence shows where models and humans disagree. On flagged unpleasant images (violence, injury, death), all models share the sign of the human contrast. On flagged images that humans rate as pleasant, mostly nudity and erotic content, every model falls below the human interval.</p>
+  <div class="head reveal">
+    <span class="eyebrow" data-n="04">Where it breaks</span>
+    <h2>Sensitive content flips the sign</h2>
+    <p>Cross the OASIS sensitive flag with pleasantness. On violence and injury, all 17 models share the human direction. Now click <b>Flagged · pleasant</b>, mostly nudity and erotic content.</p>
   </div>
 
-  <div class="controls">
+  <div class="controls reveal">
     <div class="seg scroll" role="group" aria-label="Image group" id="gate-seg">
-      <button type="button" data-g="0" aria-pressed="false">Unflagged, unpleasant (194)</button>
-      <button type="button" data-g="1" aria-pressed="false">Unflagged, pleasant (539)</button>
-      <button type="button" data-g="2" aria-pressed="false">Flagged, unpleasant (113)</button>
-      <button type="button" data-g="3" aria-pressed="true">Flagged, pleasant (54)</button>
+      <button type="button" data-g="0" aria-pressed="false">Unflagged · unpleasant <span class="mono" style="opacity:.6">194</span></button>
+      <button type="button" data-g="1" aria-pressed="false">Unflagged · pleasant <span class="mono" style="opacity:.6">539</span></button>
+      <button type="button" data-g="2" aria-pressed="true">Flagged · unpleasant <span class="mono" style="opacity:.6">113</span></button>
+      <button type="button" data-g="3" aria-pressed="false">Flagged · pleasant <span class="mono" style="opacity:.6">54</span></button>
     </div>
     <div class="seg small" role="group" aria-label="Dimension" id="dim-seg">
       <button type="button" data-d="v" aria-pressed="true">Valence</button>
@@ -256,73 +333,76 @@
     </div>
   </div>
 
-  <div class="panel">
+  <div class="panel reveal">
     <div class="panel-head">
       <h4 id="gate-title">Older − young valence</h4>
-      <p>circles: 17 VLMs (hollow = not significant, BH) · diamond: OASIS raters 60+ vs 18–29, 95% CI</p>
+      <p>hollow = not significant after BH correction</p>
     </div>
     <div class="swarm" id="gate-swarm" role="img" aria-label="Older-minus-young contrast for each model and for OASIS raters in the selected image group."></div>
     <dl class="readout">
       <div><dt>models with the human sign</dt><dd id="g-sign">–</dd></div>
       <div><dt>models below the human 95% CI</dt><dd id="g-below">–</dd></div>
-      <div><dt>17-model mean vs. humans</dt><dd id="g-gap">–</dd></div>
+      <div><dt>17-model mean vs humans</dt><dd id="g-gap">–</dd></div>
     </dl>
   </div>
-  <p class="panel-note"><b>Interactive Table 3.</b> Older-minus-young contrast by sensitive flag and pooled human valence (unpleasant &lt; 4, pleasant ≥ 4). Human intervals are wide on the flagged subsets because only 25 (valence) and 16 (arousal) raters are aged 60 or over, so the magnitude of the human estimate remains uncertain.</p>
+  <p class="panel-note">The older-minus-young valence shift averages −0.390 on flagged images and −0.035 on unflagged ones, an ordering that holds for every model. Human intervals are wide on flagged subsets because only 25 valence raters are 60+.</p>
 </section>
 
 <!-- ============ PERSONA ============ -->
 <section class="block container" id="persona">
-  <h2>Age-Conditioned Labels and Descriptions</h2>
-  <div class="text">
-    <p>Under the older persona, emotion labels shift toward aversive categories and descriptions draw more often on memory and vulnerability. The examples below are verbatim model outputs (shortened with an ellipsis) on three OASIS images that are not sensitive-flagged; OASIS raters aged 60+ rate all three slightly more pleasant than young raters. Use the switch to compare the young and older personas.</p>
+  <div class="head reveal">
+    <span class="eyebrow" data-n="05">The older persona</span>
+    <h2>Thrill becomes risk, excitement becomes frailty</h2>
+    <p>Flip the persona. These are verbatim model outputs on three ordinary (not sensitive) OASIS images that older raters find slightly <i>more</i> pleasant than young raters.</p>
   </div>
 
-  <div class="persona-switch">
+  <div class="persona-switch reveal">
     <div class="flip" id="flip" data-p="Y" role="group" aria-label="Persona">
       <span class="knob" aria-hidden="true"></span>
-      <button type="button" data-p="Y" aria-pressed="true">Young adult (18–29)</button>
-      <button type="button" data-p="O" aria-pressed="false">Older adult (60+)</button>
+      <button type="button" data-p="Y" aria-pressed="true">Young adult · 18–29</button>
+      <button type="button" data-p="O" aria-pressed="false">Older adult · 60+</button>
     </div>
   </div>
 
-  <div class="examples" id="examples"></div>
-  <p class="panel-note">V / A: pooled human valence and arousal (1–7). O − Y: 17-VLM mean older-minus-young valence shift. Coloured words: <span class="w-vul">vulnerability</span>, <span class="w-mem">memory</span>, <span class="w-exc">excitement</span>.</p>
+  <div class="examples reveal" id="examples"></div>
 
-  <div class="lexicon" id="lexicon">
+  <div class="lexicon reveal" id="lexicon">
     <div class="panel">
-      <div class="panel-head"><h4>Description lexica</h4><p>% of descriptions, pooled over 17 models</p></div>
+      <div class="panel-head"><h4>What the descriptions talk about</h4><p>% of descriptions, pooled over 17 models</p></div>
       <div class="panel-body">
         <div id="lex-rows"></div>
-        <p class="wordcloud">Words most diagnostic of the older persona (weighted log odds): <span>nostalgia</span>, <span>reminds</span>, <span>memories</span>, <span>reminiscent</span>, <span>reminding</span>, <span>older</span>.</p>
+        <p style="margin:14px 0 0;font-size:.8rem;color:var(--ink-3)">Words most diagnostic of the older persona (weighted log-odds):</p>
+        <div class="wordcloud"><span>nostalgia</span><span>reminds</span><span>memories</span><span>reminiscent</span><span>reminding</span><span>older</span></div>
       </div>
     </div>
     <div class="panel">
-      <div class="panel-head"><h4>Emotion label changes</h4><p>net model–image pairs, older minus young persona</p></div>
+      <div class="panel-head"><h4>Emotion labels drift aversive</h4><p>net model–image pairs gaining the label under the older persona</p></div>
       <div class="panel-body">
         <div class="mini-legend"><span>← young persona</span><span>older persona →</span></div>
         <div class="labels-net" id="labels-net"></div>
-        <p class="panel-note" style="margin-top:10px">746 pairs receive an aversive label under the older persona only, against 239 under the young persona only; the gain is significant for 13 of 17 models. Label entropy is unchanged (2.49 vs. 2.47 bits).</p>
+        <p style="margin:14px 0 0;font-size:.84rem;color:var(--ink-2);line-height:1.5">746 pairs gain an aversive label only under the older persona vs 239 only under the young one (13 / 17 models significant). Label entropy is unchanged (2.49 vs 2.47 bits): labels are redistributed, not collapsed.</p>
       </div>
     </div>
   </div>
 
-  <div class="text" style="margin-top:20px">
-    <p>Within each model, vulnerability language accompanies lower older-persona ratings, while memory language accompanies higher ratings. Since ratings and descriptions come from the same generation, these associations do not establish causality. A no-age “retired” persona reproduces the older-persona shift (median per-image <i>r</i> = 0.75) and its memory language, whereas a “cautious” persona lowers ratings across all images (<i>r</i> = 0.46). The response to the retirement cue supports a stereotype-based interpretation of the shared pattern.</p>
+  <div class="callout reveal">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2.5 20h19L12 3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 10v4.5M12 17.2v.3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    <p><b>A stereotype, not a population.</b> A no-age “retired” persona reproduces the older-persona shift (median per-image <i>r</i> = 0.75) and its memory language, whereas a “cautious” persona lowers ratings across all images (<i>r</i> = 0.46). Across models, the size of the valence shift tracks how often the older persona reminisces (ρ = −0.76), not baseline competence (ρ = −0.07).</p>
   </div>
 </section>
 
 <!-- ============ INTERVENTIONS ============ -->
 <section class="block container" id="interventions">
-  <h2>Effects of Reasoning and Human Evidence</h2>
-  <div class="text">
-    <p>We evaluate six interventions with GPT-5.6-Luna-Pro on a stratified subset of 300 images. S1 adds an instruction not to rely on age stereotypes; S2 chains a perceiver, a persona rater, a stereotype critic and a reviser, with no human data. S3–S5 and VERA-Cal use retrieved human age differences for similar images from other OASIS lists and themes, so the model never sees ratings for the target image. The selected arm, S4, is then run unchanged on the 600 remaining images.</p>
+  <div class="head reveal">
+    <span class="eyebrow" data-n="06">Interventions</span>
+    <h2>Reasoning does not help. Human evidence partly does.</h2>
+    <p>Six interventions on GPT-5.6-Luna-Pro, selected on 300 development images, then the chosen arm run unchanged on 600 held-out images. Evidence comes only from other OASIS lists and themes, never the target image.</p>
   </div>
 
-  <div class="controls">
+  <div class="controls reveal">
     <div class="seg small" role="group" aria-label="Image set" id="set-seg">
-      <button type="button" data-s="dev" aria-pressed="true">Development (300)</button>
-      <button type="button" data-s="held" aria-pressed="false">Held-out (600)</button>
+      <button type="button" data-s="dev" aria-pressed="true">Development · 300</button>
+      <button type="button" data-s="held" aria-pressed="false">Held-out · 600</button>
     </div>
     <div class="seg small scroll" role="group" aria-label="Score" id="score-seg">
       <button type="button" data-k="rpart" aria-pressed="true">Fidelity <i>r</i><sub>part</sub></button>
@@ -331,7 +411,7 @@
     </div>
   </div>
 
-  <div class="panel">
+  <div class="panel reveal">
     <div class="panel-head">
       <h4 id="mit-title">Fidelity after removing pleasantness</h4>
       <p id="mit-sub">95% bootstrap CI · dashed line: human ceiling</p>
@@ -342,41 +422,70 @@
       <div class="axis-label" id="mit-axis"></div>
     </div>
   </div>
-  <p class="panel-note"><b>Interactive Table 4.</b> <span id="mit-note"></span></p>
+  <p class="panel-note" id="mit-note"></p>
 
-  <div class="grid2">
-    <figure>
+  <div class="grid2" style="margin-top:30px">
+    <figure class="reveal">
       <button class="shot" type="button" aria-label="Enlarge figure 4">
         <img src="static/images/ladder.png" width="2400" height="791" loading="lazy" alt="Group means on 300 images: 17 VLMs reach r_part 0.06 and 51% direction agreement, reasoning agents −0.01 and 42%, human-grounded agents 0.16 and 83%, against a human reference of 0.60 and 85%.">
+        <span class="zoom" aria-hidden="true"><svg viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10.5 10.5 14 14M7 5v4M5 7h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
       </button>
-      <figcaption><b>Figure 4. Grounding improves alignment but remains below the human ceiling.</b> (a) Mean <i>r</i><sub>part</sub> per group. (b) Direction agreement with human age effects. (c) Fidelity as a percentage of the ceiling.</figcaption>
+      <figcaption><b>Grounding helps, but stays below the human ceiling.</b> Grounded agents reach 27% of the ceiling; reasoning agents −1%.</figcaption>
     </figure>
-    <figure>
-      <button class="shot" type="button" aria-label="Enlarge figure 5">
+    <figure class="reveal">
+      <button class="shot" type="button" aria-label="Enlarge the VERA-Cal method figure">
         <img src="static/images/vera_method.png" width="2400" height="1091" loading="lazy" alt="VERA-Cal: (A) leak-free human evidence from similar images in other OASIS lists; (B) hypothesise a rule, verify it on hidden human cases, refine once or abstain; (C) simulated rater panels, a calibrator anchored on the no-age rating, and an auditor.">
+        <span class="zoom" aria-hidden="true"><svg viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10.5 10.5 14 14M7 5v4M5 7h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
       </button>
-      <figcaption><b>Figure 5. VERA-Cal.</b> A hypothesized age-difference rule is kept only if it passes a re-test on held-out human cases, then passed to the rater panels and calibrator of S4.</figcaption>
+      <figcaption><b>VERA-Cal.</b> Hypothesise an age-difference rule, keep it only if it passes a re-test on hidden human cases, then pass it to calibrated rater panels.</figcaption>
     </figure>
   </div>
 
-  <div class="text" style="margin-top:20px">
-    <p>Reasoning alone does not improve alignment: S1 and S2 reach mean <i>r</i><sub>part</sub> = −0.01, compared with 0.06 for the original VLMs, and direction agreement falls from 51% to 42%. Human-grounded agents raise direction agreement to 83% (<i>p</i> &lt; .001). Direction agreement is partly driven by pleasantness, which explains 81% of the human age effect, and a pleasantness-only rule with no model still exceeds every arm on direction agreement and error. On the 600 held-out images, S4 reaches <i>r</i><sub>part</sub> = 0.105 [0.014, 0.196], above direct prompting by +0.130 [0.006, 0.254] (<i>p</i> = .041).</p>
+  <div class="callout reveal">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 11v6M12 7.5v.3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    <p><b>The honest baseline.</b> A pleasantness-only rule with no model still beats every arm on direction agreement and error, because pleasantness explains 81% of the human age effect. That is why <i>r</i><sub>part</sub>, which removes pleasantness, is the target: held out, S4 reaches 0.105 [0.014, 0.196], above direct prompting by +0.130 (<i>p</i> = .041), and fixes 400 image directions while breaking 35.</p>
   </div>
 </section>
 
-<!-- ============ DISCUSSION ============ -->
-<section class="block container" id="discussion">
-  <h2>Discussion</h2>
-  <div class="text">
-    <p>Strong agreement with average human ratings does not necessarily translate into capturing age-related differences in image perception. The gap is clearest for pleasant images flagged as sensitive in OASIS, where models assign lower valence under the older persona although older participants rate these images more positively. Age prompting can also reduce predictive accuracy for the intended group: across 900 images, median RMSE for participants aged 60 and above increases from 0.756 to 0.789, driven largely by the 54 pleasant sensitive images, where it rises from 0.754 to 1.214. Evaluations of age-conditioned predictions should compare model and human contrasts on matched images and report agreement after accounting for pleasantness.</p>
-    <p><b>Limitations.</b> Raters are aged up to 74, including 41 aged 60 and above (25 contributing valence ratings). The design is cross-sectional and the sample is an online U.S. one. OASIS provides the reference norms, and arousal age effects are supported for only 59 of 900 images. Each request uses a single completion at temperature 0, and the interventions use one backbone.</p>
+<!-- ============ TAKEAWAYS ============ -->
+<section class="block container" id="takeaways">
+  <div class="head reveal">
+    <span class="eyebrow" data-n="07">Takeaways</span>
+    <h2>What this means for personalized assistants</h2>
   </div>
+  <div class="trio">
+    <div class="card reveal">
+      <span class="tag">Evaluate</span>
+      <h3>Compare contrasts, not averages</h3>
+      <p>High agreement with a pooled norm can coexist with a reversed group difference. Score model contrasts against human contrasts on the same stimuli.</p>
+    </div>
+    <div class="card reveal">
+      <span class="tag">Control</span>
+      <h3>Partial out the obvious</h3>
+      <p>Pleasantness alone predicts the human age effect at <i>r</i> = 0.897. Report fidelity after removing it, against a ceiling set by the human data.</p>
+    </div>
+    <div class="card reveal">
+      <span class="tag">Caution</span>
+      <h3>Age cues can hurt the target group</h3>
+      <p>Predicting raters aged 60+, median RMSE rises from 0.756 to 0.789 with the older persona, and from 0.754 to 1.214 on pleasant sensitive images.</p>
+    </div>
+  </div>
+  <details class="more reveal">
+    <summary>Limitations <span>§5</span></summary>
+    <div class="inner">
+      <ul>
+        <li>Raters are aged 18–74, with 41 aged 60+ (25 contributing valence). The design is cross-sectional and the sample is an online U.S. one, so the human contrasts describe age differences in that population.</li>
+        <li>OASIS provides the reference norms; arousal age effects are supported for only 59 of 900 images, so arousal fidelity is not interpreted.</li>
+        <li>Each request uses one completion at temperature 0. The interventions use one backbone (GPT-5.6-Luna-Pro), which limits conclusions about others.</li>
+      </ul>
+    </div>
+  </details>
 </section>
 
 <!-- ============ BIBTEX ============ -->
 <section class="block container" id="bibtex-section">
-  <h2>BibTeX</h2>
-  <div class="narrow bib">
+  <div class="head reveal"><span class="eyebrow" data-n="08">Cite</span><h2>BibTeX</h2></div>
+  <div class="narrow bib reveal">
     <button class="pill light" type="button" id="copy-bib">Copy</button>
 <pre id="bibtex">@misc{ridoy2026ageaffect,
   title  = {Characterizing Age-Conditioned Affective Reasoning
@@ -391,8 +500,8 @@
 </main>
 
 <footer class="container">
-  Correspondence: Ruogu Fang (<a href="mailto:ruogu.fang@vanderbilt.edu">ruogu.fang@vanderbilt.edu</a>)<br>
-  Images from the Open Affective Standardized Image Set (<a href="https://doi.org/10.3758/s13428-016-0715-3" target="_blank" rel="noopener">Kurdi et al., 2017</a>).
+  <span>Corresponding author: Ruogu Fang (<a href="mailto:ruogu.fang@vanderbilt.edu">ruogu.fang@vanderbilt.edu</a>)</span>
+  <span>Images: <a href="https://doi.org/10.3758/s13428-016-0715-3" target="_blank" rel="noopener">OASIS</a> (Kurdi et al., 2017) · <a href="https://shahriyar-zaman.github.io/" target="_blank" rel="noopener">shahriyar-zaman.github.io</a></span>
 </footer>
 
 <script src="static/js/data.js"></script>
